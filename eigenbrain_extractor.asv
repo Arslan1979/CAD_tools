@@ -1,0 +1,29 @@
+function [eignbr,pca,latent]=eigenbrain_extractor(y,pname)
+
+okopts={'pca','ica'};fprintf .
+cl = find(strncmpi(pname, okopts,numel(pname)));fprintf .
+P=size(y,1);fprintf .
+switch cl
+    case 1
+        media=mean(y);fprintf .
+        for j=1:P
+            y(j,:,:,:)=y(j,:,:,:)-media; 
+        end
+        fprintf('..Calculating PCA..')
+        [pca,eignbr,latent]=princomp(y(:,:)');
+%        [eignbr,pca,latent]=princomp(y(:,:),'econ');
+        fprintf('pca extraction concluded \n')
+    case 2
+        media=mean(y);fprintf .
+        for j=1:P
+            y(j,:,:,:)=y(j,:,:,:)-media; 
+        end
+        [eignbr,A,W]=fastica(y(:,:)','verbose','off','numOfIC',10);%);%
+        eignbr=eignbr';
+        pca=A;
+        latent=[];
+        disp('ica extraction concluded')
+    otherwise
+        error('No has seleccionado un método correcto');
+end
+end

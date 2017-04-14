@@ -1,0 +1,162 @@
+function y= bmp_stack(stack,n,adni)%,Fichero)
+% BMP STACK
+% bmp_stack(stack,n) dibuja un cerebrillo en 'n' filas y ajusta el numero de
+% slices por fila de manera q se dibuje todo el cerebro.
+% Si el numero de filas no se especifica, el default es 1.
+% stack ha de ser 3D, pero si se te olvida hacer squeeze, no
+% pasa nada, te lo dibuja igual.
+
+if nargin < 2
+    n=1;
+    adni=false;
+elseif nargin ==2
+    adni=false;
+end
+if numel(size(stack))>3
+    stack=squeeze(stack);
+    if numel(size(stack))>3
+        for np=1:size(stack,1)
+            stackn(:,:,:)=squeeze(stack(np,:,:,:));
+            [Z Y X]= size(stackn);
+
+
+
+            if adni
+
+                JPG= [ ];
+                FILA= [ ];
+                IMAGENES_POR_FILA= floor(X/n);
+                NUM_FILAS= floor((X+1)/IMAGENES_POR_FILA);
+                contador= 0;
+
+                NUM_IMAGENES= NUM_FILAS*IMAGENES_POR_FILA;
+                %                 while NUM_IMAGENES<X
+                %                     IMAGENES_POR_FILA=IMAGENES_POR_FILA+1;
+                %                     NUM_FILAS= floor((X+1)/IMAGENES_POR_FILA);
+                %                     NUM_IMAGENES= NUM_FILAS*IMAGENES_POR_FILA;
+                %                 end
+                for x=1:X
+                    R= flipud(squeeze(stackn(:,:,x)));
+                    %    R=imresize(I,20);
+                    FILA= [ FILA R ];
+                    contador= contador + 1;
+                    if contador==IMAGENES_POR_FILA
+                        JPG= [JPG ; FILA ];
+                        FILA = [ ];
+                        contador= 0;
+                    end
+                end
+            else
+                JPG= [ ];
+                FILA= [ ];
+                IMAGENES_POR_FILA= floor(Z/n);
+                NUM_FILAS= floor((Z+1)/IMAGENES_POR_FILA);
+                contador= 0;
+
+                NUM_IMAGENES= NUM_FILAS*IMAGENES_POR_FILA;
+                while NUM_IMAGENES<Z
+                    IMAGENES_POR_FILA=IMAGENES_POR_FILA+1;
+                    NUM_FILAS= floor((Z+1)/IMAGENES_POR_FILA);
+                    NUM_IMAGENES= NUM_FILAS*IMAGENES_POR_FILA;
+                end
+                for z=1:Z
+                    R= squeeze(stackn(z,:,:));
+                    %    R=imresize(I,20);
+                    FILA= [ FILA R ];
+                    contador= contador + 1;
+                    if contador==IMAGENES_POR_FILA
+                        JPG= [JPG ; FILA ];
+                        FILA = [ ];
+                        contador= 0;
+                    end
+                end
+            end
+
+            %map= jet(100);
+            figure
+            imagesc(JPG);
+            colorbar;
+            axis('image');
+            axis('off');
+            %caxis([min(stack(:)) max(stack(:))]);
+            %title('Precision map in SPECT images')
+            %imwrite(JPG,map,Fichero,'bmp');
+        end
+        return
+    end
+
+end
+[Z Y X]= size(stack);
+
+
+
+if adni
+    JPG= [ ];
+    FILA= [ ];
+    IMAGENES_POR_FILA= round(X/n);
+    if isnan(IMAGENES_POR_FILA), IMAGENES_POR_FILA=1; end
+    NUM_FILAS= round((X)/IMAGENES_POR_FILA);
+    contador= 0;
+
+    NUM_IMAGENES= NUM_FILAS*IMAGENES_POR_FILA;
+    while NUM_IMAGENES<X
+        IMAGENES_POR_FILA=IMAGENES_POR_FILA+1;
+        %        NUM_FILAS= floor((X)/IMAGENES_POR_FILA);
+        NUM_IMAGENES= NUM_FILAS*IMAGENES_POR_FILA;
+    end
+    for x=1:X
+        R= flipud(squeeze(stack(:,:,x)));
+        %    R=imresize(I,20);
+        FILA= [ FILA R ];
+        contador= contador + 1;
+        if contador==IMAGENES_POR_FILA
+            JPG= [JPG ; FILA ];
+            FILA = [ ];
+            contador= 0;
+        end
+    end
+else
+    JPG= [ ];
+    FILA= [ ];
+    IMAGENES_POR_FILA= floor(Z/n);
+    NUM_FILAS= floor((Z)/IMAGENES_POR_FILA);
+    contador= 0;
+
+    NUM_IMAGENES= NUM_FILAS*IMAGENES_POR_FILA;
+    while NUM_IMAGENES<Z
+        IMAGENES_POR_FILA=IMAGENES_POR_FILA+1;
+        NUM_IMAGENES= NUM_FILAS*IMAGENES_POR_FILA;
+    end
+    fila=0;
+    for z=1:Z
+        R= squeeze(stack(z,:,:));
+        %    R=imresize(I,20);
+        FILA= [ FILA R ];
+        contador= contador + 1;
+        if contador==IMAGENES_POR_FILA
+            JPG= [JPG ; FILA ];
+            FILA = [ ];
+            contador= 0;
+            fila=fila+1;
+        elseif and(z==Z,fila==NUM_FILAS-1)
+            while contador<IMAGENES_POR FILA
+                S=zeros(size(R));
+                %    R=imresize(I,20);
+                FILA= [ FILA R ];
+                contador= contador + 1;
+            end
+            JPG= [JPG ; FILA ];
+        end
+    end
+end
+
+%map= jet(100);
+imagesc(JPG);
+%colorbar;
+axis('image');
+axis('off');
+%caxis([-0.04 0.0427]);
+%title('Precision map in SPECT images')
+%imwrite(JPG,map,Fichero,'bmp');
+
+y= 1;

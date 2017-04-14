@@ -1,0 +1,29 @@
+function [stack_all_nor]=normalize_int(stack_all,pbin,th)
+
+P=size(stack_all,1);
+for p=1:P
+    stack=squeeze(stack_all(p,:,:,:));
+    mini=min(stack(:));
+    stack(isnan(stack))=0;
+    if mini<0
+    desp=0-mini;
+    stack=stack+desp;
+    end
+    [j,k]=hist(stack(:),100);fprintf('.')
+
+    % Coge los bins a partir del 10, porque normalmente los primeros bins acumulan muchisima información irrelevante de fuera del cerebro, y
+    % calcula su valor acumulado
+    for M=pbin:50
+        su(M-9)=sum(j(M:100));
+    end
+    fprintf('.')
+    % Obtiene el bin a partir del cual se registran intensidades mayores al 0.1% del valor acumulado anterior
+    max_i=k(max(find(su>(su(1)*th)))+9);fprintf('.')
+    % Se normaliza toda la imagen a 1-0 con este valor
+    stack=stack./max_i;fprintf('.')
+
+    stack(stack>1)=1;fprintf('.')
+    stack(stack<0.001)=0;fprintf('.')
+    fprintf('intensity normalized of %d patient \n',p)
+    stack_all_nor(p,:,:,:)=stack(:,:,:);
+end

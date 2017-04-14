@@ -1,0 +1,19 @@
+function [stack_all]= mascara(stack_all,Th)
+
+if nargin==1
+    Th=0.5;
+end
+
+P=size(stack_all,1);
+stack_mask=squeeze(mean(stack_all));
+stack_mask=stack_mask/max(stack_mask(:));
+
+stack_binary_mask= stack_mask>Th;
+for i=1:P
+    stack=squeeze(stack_all(i,:,:,:));
+    stack(~stack_binary_mask)=0;
+    stack_all(i,:,:,:)=stack;
+end
+
+end
+
