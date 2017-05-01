@@ -14,6 +14,12 @@ end
 
 for i=list(1):list(end)
     [N M]=size(squeeze(y(i,:,:)));
+    ncc=bwconncomp(x(:,1,i)>0);
+    for j=1:ncc.NumObjects
+        mask=points2bw(x(ncc.PixelIdxList{j},:,i),N,M);
+        y(i,:,:)=squeeze(y(i,:,:))+mask;
+    end
+            
     mask=points2bw( x(x(:,1,i)>0,:,i),N,M);
     y(i,:,:)=mask;
 end
