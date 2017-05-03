@@ -1,5 +1,8 @@
 function [x0,x1]=create_labelleddata(stack_all,mask,mask2)
 
+if nargin<3
+    x0=double(stack_all(:,mask>0));x1=[];
+else
 % set threshold for consider interesting data (many lie below the 0.001
 % range
 th=0.01;
